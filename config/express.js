@@ -35,14 +35,15 @@ module.exports = function() {
 	app.use(session({
 		secret: config.secret,
 		resave: true,
-		saveUninitialized: true,
-		cookie: {
+		saveUninitialized: true
+		/*cookie: {
 			maxAge: config.sessionMaxAge
-		}
-	}));
+		}*/
+	}));	
 	app.use(passport.initialize());
 	app.use(passport.session());
-	app.use(lusca({
+	app.use(flash());
+	/*app.use(lusca({
 		csrf: true,
 		xframe: 'SAMEORIGIN',
 		hsts: {
@@ -51,23 +52,22 @@ module.exports = function() {
 			preload: true
 		},
 		xssProtection: true
-	}));
-	app.use(flash());
+	}));	*/
 	if ('development' == app.get('env')) {
 		app.use(morgan('dev'));
 	} else {
 		app.use(compress());
-		app.set('trust proxy', 1)
-		session.cookie.secure = true
+		//app.set('trust proxy', 1)
+		//session.cookie.secure = true
 	}
 	app.use('/static', express.static('public'));
 
 	//routes
-	require('../app/routes/index')(app);
+	require('../app/routes/index')(app, passport);
 	//load all routes first
 	if ('development' == app.get('env')) {
 		app.use(errorHandler());
 	}
-	app.use(cleanup());
+	//app.use(cleanup());
 	return app;
 };

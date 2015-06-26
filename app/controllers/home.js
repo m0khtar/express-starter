@@ -1,7 +1,6 @@
 module.exports = {
 	index: function(req, res, next) {
-		res.render('index', {
-			ttt: "hello"
-		});
+		res.locals.user = req.user;
+		res.render('index');
 	}
 };

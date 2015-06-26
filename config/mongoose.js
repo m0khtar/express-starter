@@ -23,6 +23,7 @@ module.exports = function() {
 	});
 
 	//register models
+	require('../app/models/user.js');
 
 	return db;
 };
