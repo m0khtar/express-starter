@@ -23,23 +23,34 @@ module.exports = function() {
 	app.set('port', process.env.PORT || 3000);
 	app.set('views', path.join(__dirname, '../app/views'));
 	app.set('view engine', 'jade');
+	app.locals.env = app.get('env');
 
 	//middleware
 	app.use(favicon('./public/favicon.ico'));
+	if ('development' == app.get('env')) {
+		app.use(morgan('dev'));
+	} else {
+		app.use(compress());
+	}
 	app.use(cookieParser());
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({
 		extended: true
 	}));
 	app.use(methodOverride());
-	app.use(session({
+	var sess = {
 		secret: config.secret,
 		resave: true,
 		saveUninitialized: true,
 		cookie: {
 			maxAge: config.sessionMaxAge
 		}
-	}));
+	};
+	if ('production' == app.get('env')) {
+		app.set('trust proxy', 1)
+		sess.cookie.secure = true;
+	}
+	app.use(session(sess));
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(flash());
@@ -53,13 +64,7 @@ module.exports = function() {
 		},
 		xssProtection: true
 	}));
-	if ('development' == app.get('env')) {
-		app.use(morgan('dev'));
-	} else {
-		app.use(compress());
-		app.set('trust proxy', 1);
-		session.cookie.secure = true;
-	}
+
 	app.use('/static', express.static('public'));
 
 	//routes

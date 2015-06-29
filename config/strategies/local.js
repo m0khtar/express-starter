@@ -33,7 +33,7 @@ module.exports = function() {
 	passport.use('local-signup', new LocalStrategy({
 		usernameField: 'email',
 		passReqToCallback: true
-	}, function(req,username, password, done) {
+	}, function(req, username, password, done) {
 		User.findOne({
 			email: username
 		}, function(err, user) {
@@ -42,7 +42,10 @@ module.exports = function() {
 					message: 'Email already taken.'
 				});
 			}
-			var user = new User(req.body);
+			var user = new User({
+				email: req.body.email,
+				password: req.body.password
+			});
 			user.save(function(err) {
 				if (err) return done(err);
 				return done(null, user);
