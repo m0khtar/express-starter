@@ -9,12 +9,9 @@ module.exports = {
 	},
 	renderSignup: function(req, res) {
 		if (req.user) return res.redirect('/');
-		res.render('signup', {
-			message: req.flash('error') || req.flash('info')
-		});
+		res.render('signup');
 	},
 	login: function(req, res, next) {
-		if (req.user) return res.redirect('/');
 		passport.authenticate('local-login', {
 			successRedirect: '/',
 			failureRedirect: '/login',
@@ -23,11 +20,6 @@ module.exports = {
 	},
 	signup: function(req, res, next) {
 		if (req.user) return res.redirect('/');
-		passport.authenticate('local-signup', {
-			successRedirect: '/',
-			failureRedirect: '/signup',
-			failureFlash: true
-		})(req, res, next)
 	},
 	logout: function(req, res) {
 		req.logout();

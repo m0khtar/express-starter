@@ -4,10 +4,14 @@ var passport = require('passport'),
 
 module.exports = function() {
 	passport.use('local-login', new LocalStrategy({
-		usernameField: 'email'
+		//passReqToCallback: true
 	}, function(username, password, done) {
 		User.findOne({
-				email: username
+				$or: [{
+					username: username
+				}, {
+					email: username
+				}]
 			},
 			function(err, user) {
 				if (err) {
@@ -15,7 +19,7 @@ module.exports = function() {
 				}
 				if (!user) {
 					return done(null, false, {
-						message: 'Invalid user / password'
+						message: 'Unknown user'
 					});
 				}
 				user.validPassword(password, function(err, isMatch) {
@@ -24,29 +28,10 @@ module.exports = function() {
 						return done(null, user);
 					} else {
 						return done(null, false, {
-							message: 'Invalid user / password'
+							message: 'Invalid password'
 						});
 					}
 				});
 			});
-	}));
-	passport.use('local-signup', new LocalStrategy({
-		usernameField: 'email',
-		passReqToCallback: true
-	}, function(req,username, password, done) {
-		User.findOne({
-			email: username
-		}, function(err, user) {
-			if (user) {
-				return done(null, false, {
-					message: 'Email already taken.'
-				});
-			}
-			var user = new User(req.body);
-			user.save(function(err) {
-				if (err) return done(err);
-				return done(null, user);
-			});
-		});
 	}));
 };
