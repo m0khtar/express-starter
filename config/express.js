@@ -26,24 +26,24 @@ module.exports = function() {
 
 	//middleware
 	app.use(favicon('./public/favicon.ico'));
-	app.use(methodOverride());
+	app.use(cookieParser());
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({
 		extended: true
 	}));
-	app.use(cookieParser());
+	app.use(methodOverride());
 	app.use(session({
 		secret: config.secret,
 		resave: true,
-		saveUninitialized: true
-		/*cookie: {
+		saveUninitialized: true,
+		cookie: {
 			maxAge: config.sessionMaxAge
-		}*/
-	}));	
+		}
+	}));
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(flash());
-	/*app.use(lusca({
+	app.use(lusca({
 		csrf: true,
 		xframe: 'SAMEORIGIN',
 		hsts: {
@@ -52,13 +52,13 @@ module.exports = function() {
 			preload: true
 		},
 		xssProtection: true
-	}));	*/
+	}));
 	if ('development' == app.get('env')) {
 		app.use(morgan('dev'));
 	} else {
 		app.use(compress());
-		//app.set('trust proxy', 1)
-		//session.cookie.secure = true
+		app.set('trust proxy', 1);
+		session.cookie.secure = true;
 	}
 	app.use('/static', express.static('public'));
 

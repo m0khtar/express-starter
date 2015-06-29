@@ -9,12 +9,7 @@ module.exports = function(app) {
 	//users
 	app.route('/login')
 		.get(usersController.renderLogin)
-		.post(passport.authenticate('local-login', {
-			successRedirect: '/',
-			failureRedirect: '/login',
-			failureFlash: true
-		}));
-	//.post(usersController.login);
+		.post(usersController.login);
 	app.route('/signup')
 		.get(usersController.renderSignup)
 		.post(usersController.signup);

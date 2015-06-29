@@ -28,6 +28,10 @@ var UserSchema = new Schema({
 
 UserSchema.pre('save', function(next) {
 	var user = this;
+	this.HashPassword(user, next);
+});
+
+UserSchema.methods.HashPassword = function(user, next) {
 	if (!user.isModified('password')) return next();
 	bcrypt.genSalt(10, function(err, salt) {
 		if (err) return next(err);
@@ -38,10 +42,13 @@ UserSchema.pre('save', function(next) {
 			next();
 		});
 	});
-});
+};
 
-UserSchema.methods.validPassword = function(password) {
-	return bcrypt.compareSync(password, this.password);
+UserSchema.methods.validPassword = function(password, next) {
+	bcrypt.compare(password, this.password, function(err, res) {
+		if (err) return next(err);
+		next(null, res);
+	});
 };
 
 mongoose.model('User', UserSchema);
